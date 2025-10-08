@@ -1,7 +1,8 @@
-'use strict';
+(function() {
+    'use strict';
 
-// Quick guard: don't initialize twice
-if (document.getElementById('customInputWrapper')) return;
+    // Quick guard: don't initialize twice
+    if (document.getElementById('customInputWrapper')) return;
 
 // Config / Constants
 const LOGO_URL = 'https://github.com/BlueLobsterSoftware/ParrotMod/blob/main/ParrotMod.png?raw=true';
@@ -149,3 +150,5 @@ const observer = new MutationObserver(() => {
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
+
+})();
