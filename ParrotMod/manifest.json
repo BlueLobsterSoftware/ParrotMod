@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ParrotMod",
+  "version": "1.0",
+  "description": "ParrotMod is the new sensation",
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": ["https://www.tryparrotai.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
