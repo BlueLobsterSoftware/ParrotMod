@@ -113,6 +113,28 @@ waitForElement(SELECTORS.counter, counter => {
     counter.parentElement.insertBefore(wrapper, counter);
 });
 
+// Keep the page's original textarea(s) in sync with our custom input.
+function getExternalTextareas() {
+    return Array.from(document.querySelectorAll('textarea')).filter(t => t !== input);
+}
+
+function copyToOriginalTextareas() {
+    const text = input.value || '';
+    getExternalTextareas().forEach(t => {
+        try {
+            t.value = text;
+            // Notify any listeners that the value changed
+            t.dispatchEvent(new Event('input', { bubbles: true }));
+            t.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch (err) {
+            // ignore any readonly/other edge cases
+        }
+    });
+}
+
+// Keep in sync as the user types
+input.addEventListener('input', () => copyToOriginalTextareas());
+
 // Toggle watermark
 waitForElement(SELECTORS.watermarkLabel, () => {
     const label = Array.from(document.querySelectorAll(SELECTORS.watermarkLabel))
@@ -138,6 +160,29 @@ const observer = new MutationObserver(() => {
     if (genBtn && !genBtn.classList.contains('flash-loop')) {
         genBtn.textContent = 'ED_GenerateButton';
         genBtn.classList.add('flash-loop');
+    }
+
+    // Attach a capture-phase click handler so we can copy text into the real textarea(s)
+    // before the site's handler runs, and prevent the site's empty-text alert.
+    if (genBtn && !genBtn.dataset.edAttached) {
+        const handler = (e) => {
+            // Always copy our custom input into the page textareas first
+            copyToOriginalTextareas();
+
+            const text = (input.value || '').trim();
+            if (!text) {
+                // Block the site's click behavior which shows the "Please enter some text" dialog
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                input.focus();
+                // subtle visual feedback
+                input.style.borderColor = '#ff5722';
+                setTimeout(() => input.style.borderColor = '#4f46e5', 1200);
+            }
+            // otherwise let the click proceed; the real textarea(s) now contain the text
+        };
+        genBtn.addEventListener('click', handler, true); // capture phase
+        genBtn.dataset.edAttached = '1';
     }
 
     const imgs = document.querySelectorAll(SELECTORS.logoImages);
