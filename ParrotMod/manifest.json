@@ -1,16 +1,22 @@
 {
   "manifest_version": 3,
   "name": "ParrotMod",
-  "version": "1.1",
+  "version": "1.4",
   "description": "ParrotMod is the new sensation",
   "icons": {
     "128": "ParrotMod.png"
   },
   "content_scripts": [
     {
-      "matches": ["https://www.tryparrotai.com/*"],
+      "matches": ["https://www.tryparrotai.com/app/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["https://www.tryparrotai.com/*"]
     }
   ]
 }
